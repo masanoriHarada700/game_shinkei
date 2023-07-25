@@ -30,7 +30,6 @@ public class GameStartCommand extends BaseCommand implements Listener{
   public static final String EASY = "easy";
   public static final String NORMAL = "normal";
   public static final String HARD = "hard";
-  public static final String VERY_HARD = "veryhard";
 
   private final Main main;
   private final List<GameEntityInfo> gameEntityInfoList = new ArrayList<>();
