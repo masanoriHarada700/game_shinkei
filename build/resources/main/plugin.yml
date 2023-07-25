@@ -1,0 +1,7 @@
+name: Shinkei
+version: '1.0-SNAPSHOT'
+main: plugin.shinkei.Main
+api-version: 1.19
+commands:
+  gamestart:
+
