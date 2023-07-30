@@ -16,29 +16,13 @@ public class GameEntityPosition {
   public final List<Location> gameEntityPositionList = new ArrayList<>();
 
 
-  public GameEntityPosition(Player player,String difficulty) {
+  public GameEntityPosition(Player player,Difficulty isDifficulty) {
     this.player = player;
 
     int i;
-    switch (difficulty) {
-      case GameStartCommand.NORMAL -> {
-        for (i = 0; i <= 3; i++) {
-          entityPositionListX.add(i);
-          entityPositionListZ.add(i);
-        }
-      }
-      case GameStartCommand.HARD -> {
-        for (i = 0; i <= 5; i++) {
-          entityPositionListX.add(i);
-          entityPositionListZ.add(i);
-        }
-      }
-      default -> {
-        for (i = 0; i <= 1; i++) {
-          entityPositionListX.add(i);
-          entityPositionListZ.add(i);
-        }
-      }
+    for (i = 0; i <= isDifficulty.getLoopCount_entityPosition(); i++) {
+      entityPositionListX.add(i);
+      entityPositionListZ.add(i);
     }
   }
 

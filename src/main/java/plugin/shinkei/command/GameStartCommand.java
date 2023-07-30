@@ -2,6 +2,7 @@ package plugin.shinkei.command;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,11 +11,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import plugin.shinkei.Main;
 import plugin.shinkei.PlayerScoreData;
-import plugin.shinkei.data.ExecutingPlayer;
+import plugin.shinkei.data.executingPlayer;
 import plugin.shinkei.mapper.data.PlayerScore;
 
 /**
@@ -26,10 +29,6 @@ public class GameStartCommand extends BaseCommand implements Listener{
   public static final int initScore = 0;
   public static final int getPoint = 10;
   public static final String LIST = "list";
-  public static final String NONE = "none";
-  public static final String EASY = "easy";
-  public static final String NORMAL = "normal";
-  public static final String HARD = "hard";
 
   private final Main main;
   private final List<GameEntityInfo> gameEntityInfoList = new ArrayList<>();
@@ -37,7 +36,7 @@ public class GameStartCommand extends BaseCommand implements Listener{
   private final List<Integer> getEntityIdList = new ArrayList<Integer>();
   public List<Entity> entityList = new ArrayList<>();
   private final PlayerScoreData playerScoreData = new PlayerScoreData();
-  private ExecutingPlayer nowPlayer;
+  private executingPlayer nowPlayer;
 
 
   public GameStartCommand(Main main) {
@@ -54,21 +53,21 @@ public class GameStartCommand extends BaseCommand implements Listener{
 
     initPlayerStatus(player);
 
-    String difficulty = getDifficulty(player, args);
-    if (difficulty.equals(NONE)) {
+    Difficulty isDifficulty = checkDifficulty(player, args);
+    if (isDifficulty == Difficulty.NONE) {
       return false;
     }
 
-    registerEntityInfo(player,difficulty);
+    this.nowPlayer = new executingPlayer(player, initScore, isDifficulty);
 
-    this.nowPlayer = new ExecutingPlayer(player, initScore, difficulty);
+    registerEntityInfo(player,isDifficulty);
 
-    gamePlay(nowPlayer, difficulty);
+    gamePlay(nowPlayer, isDifficulty);
 
     return true;
   }
   @Override
-  public boolean onExecuteNPCCCommand(CommandSender sender, Command command, String label,
+  public boolean onExecuteNPCCommand(CommandSender sender, Command command, String label,
       String[] args) {
     return false;
   }
@@ -104,14 +103,32 @@ public class GameStartCommand extends BaseCommand implements Listener{
    * @return  ゲーム難易度
    *　
    */
-  private String getDifficulty(Player player, String[] args) {
+  public Difficulty checkDifficulty(Player player, String[] args) {
     if(args.length == 1 &&
-        (EASY.equals(args[0]) || NORMAL.equals(args[0])  || HARD.equals(args[0]))){
-      return args[0];
+        (Difficulty.EASY.preparedDifficulty().equals(args[0]) ||
+            Difficulty.NORMAL.preparedDifficulty().equals(args[0]) ||
+            Difficulty.HARD.preparedDifficulty().equals(args[0]))){
+
+      return receiveDifficulty(args);
+
+      }
+      player.sendMessage("引数の入力に誤りがあります。「easy」,「normal」,「hard」のいずれかを入力してください");
+      return Difficulty.NONE;
     }
-    player.sendMessage("引数の入力に誤りがあります。「easy」,「normal」,「hard」のいずれかを入力");
-    return NONE;
+
+  /**
+   * eunm定数のdifficultyと引数（ゲーム難易度）の文言が同じ場合,そのenum定数を返す。
+   * @param args　プレイヤーが入力したゲーム難易度
+   * @return  ゲーム難易度
+   */
+  private Difficulty receiveDifficulty(String[] args) {
+    Difficulty receiveDifficulty = Arrays.stream(Difficulty.values())
+        .filter(p -> p.preparedDifficulty().equals(args[0]))
+        .findFirst()
+        .orElse(Difficulty.NONE);
+    return receiveDifficulty;
   }
+
 
   /**
    * 出現させたEntityに対して出現位置、Entity、ペア判定のためのIDを指定する。
@@ -119,11 +136,11 @@ public class GameStartCommand extends BaseCommand implements Listener{
    *
    * @param player　コマンドを実行したプレイヤー
    */
-  private void registerEntityInfo(Player player, String difficulty) {
-    GameEntityPosition entityPosition = new GameEntityPosition(player,difficulty);
+  private void registerEntityInfo(Player player, Difficulty isDifficulty) {
+    GameEntityPosition entityPosition = new GameEntityPosition(player,isDifficulty);
     entityPosition.setEntityPositionList();
 
-    GeneratePairs generatePairs = new GeneratePairs(difficulty);
+    GeneratePairs generatePairs = new GeneratePairs(isDifficulty);
 
     while(generatePairs.locationDummyList.size() > 0 && generatePairs.idDummyList.size() > 0 ) {
 
@@ -169,7 +186,7 @@ public class GameStartCommand extends BaseCommand implements Listener{
    * また、データベースへスコア情報を登録する。
    * @param nowPlayer　コマンドを実行したプレイヤー
    */
-  private void gamePlay(ExecutingPlayer nowPlayer, String difficulty) {
+  private void gamePlay(executingPlayer nowPlayer, Difficulty isDifficulty) {
     Bukkit.getScheduler().runTaskTimer(main,
         Runnable -> {
           if (nowPlayer.getGameTime() <= 0) {
@@ -178,7 +195,7 @@ public class GameStartCommand extends BaseCommand implements Listener{
                 nowPlayer.getPlayerName() + "の合計スコアは" + nowPlayer.getSumScore() + "点！",
                 0, 100, 0);
 
-            playerScoreData.insert(new PlayerScore(nowPlayer.getPlayerName(), difficulty, nowPlayer.getSumScore()));
+            playerScoreData.insert(new PlayerScore(nowPlayer.getPlayerName(), isDifficulty.preparedDifficulty(), nowPlayer.getSumScore()));
 
             entityList.forEach(Entity::remove);
             getPairIdList.clear();
@@ -188,31 +205,25 @@ public class GameStartCommand extends BaseCommand implements Listener{
           nowPlayer.setGameTime(0);
           //スコア登録情報
         },
-        0, nowPlayer.getGameTime() * 20);
+        0, nowPlayer.getGameTime() * 20L);
   }
 
   /**
-   * 右クリックによりEntityと対話した回数により、以下のメッセージ表示とスコアの表示を行う。
-   * 対話回数１回：ペア番号を表示
-   * 対話回数２回：
-   *  ・１回目と２回目のペア番号が同じ場合：1,2回目に対話したEntityを抹消＋スコア加算
-   *  ・１回目と２回目のペア番号が異なる場合：ペア不成立の旨をメッセージ表示
-   * @param e　Entityと対話した際のイベント
+   * プレイヤーがエンティティに対して右クリックした際の基底メソッド。
+   * @param e　プレイヤーがエンティティに対して右クリックした際のイベント情報
+   * @return onEntityContactメソッドの遂行結果。遂行完了した場合、true。
    */
-
-  @Override
-  public boolean isMatching(PlayerInteractEntityEvent e) {
-      Player player = e.getPlayer();
-
+  @EventHandler
+  public void onEntityContact(PlayerInteractEntityEvent e) {
+    Player player = e.getPlayer();
+    if (e.getHand() == EquipmentSlot.HAND) {
       setIdToList(e);
 
-    if (sameEntityCheck(player) || !matchingCheck(player)) {
-      return false;
-    }
-    return true;
-    }
+      checkSameEntity(player);
 
-
+      checkMatching(player);
+    }
+  }
 
   /**
    * プレイヤーが右クリックしたエンティティのpairIdとentityIdを
@@ -235,14 +246,12 @@ public class GameStartCommand extends BaseCommand implements Listener{
    * @param player　コマンドを実行したプレイヤー
    * @return  同じエンティティならtrue, 異なるエンティティならfalse
    */
-  private boolean sameEntityCheck(Player player) {
+  private void checkSameEntity(Player player) {
     if (getEntityIdList.size() == 2 && getEntityIdList.get(0).equals(getEntityIdList.get(1))) {
       player.sendMessage("同じエンティティを選択しています。他のエンティティを選択してください");
       getPairIdList.remove(1);
       getEntityIdList.remove(1);
-      return true;
     }
-    return false;
   }
 
   /**
@@ -255,7 +264,7 @@ public class GameStartCommand extends BaseCommand implements Listener{
    * @param player コマンドを実行したプレイヤー
    * @return  メソッドの完遂可否。完遂した場合、true。
    */
-  private boolean matchingCheck(Player player) {
+  private void checkMatching(Player player) {
     switch (getPairIdList.size()){
       case 1 -> player.sendMessage("ペア番号" + getPairIdList.get(0));
       case 2 -> {
@@ -271,10 +280,8 @@ public class GameStartCommand extends BaseCommand implements Listener{
         clearMatchingList();
       }
       default -> {
-        return false;
       }
     }
-    return true;
   }
 
   /**

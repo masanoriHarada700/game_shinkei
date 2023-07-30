@@ -24,8 +24,8 @@ public class GeneratePairs {
   protected int RandomIdNumber;
   protected int SelectIdNumber;
 
-  public GeneratePairs(String difficulty) {
-    generateDummyList(difficulty);
+  public GeneratePairs(Difficulty isDifficulty) {
+    generateDummyList(isDifficulty);
     generatePairIdList();
   }
 
@@ -33,29 +33,13 @@ public class GeneratePairs {
    * ゲーム起動ごとにランダムでエンティティの出現場所とペアIDを
    * 決定するために必要な数列リスト。
    * 難易度に応じて数列リストの要素数を変更。
-   * @param difficulty　難易度
+   * @param isDifficulty　難易度
    */
-  private void generateDummyList(String difficulty) {
+  private void generateDummyList(Difficulty isDifficulty) {
     int i;
-    switch (difficulty) {
-      case GameStartCommand.NORMAL -> {
-        for (i = 0; i <= 15; i++) {
-          locationDummyList.add(i);
-          idDummyList.add(i);
-        }
-      }
-      case GameStartCommand.HARD -> {
-        for (i = 0; i <= 35; i++) {
-          locationDummyList.add(i);
-          idDummyList.add(i);
-        }
-      }
-      default -> {
-        for (i = 0; i <= 3; i++) {
-          locationDummyList.add(i);
-          idDummyList.add(i);
-        }
-      }
+    for (i = 0; i <= isDifficulty.getLoopCount_dummyList(); i++) {
+      locationDummyList.add(i);
+      idDummyList.add(i);
     }
   }
 
