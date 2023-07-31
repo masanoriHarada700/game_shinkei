@@ -14,8 +14,6 @@ public final class Main extends JavaPlugin implements Listener {
     GameStartCommand gameStartCommand = new GameStartCommand(this);
     Bukkit.getPluginManager().registerEvents(gameStartCommand, this);
     getCommand("gamestart").setExecutor(gameStartCommand);
-
-
   }
 
   @Override
