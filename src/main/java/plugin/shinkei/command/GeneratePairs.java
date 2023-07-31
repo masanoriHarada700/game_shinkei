@@ -28,22 +28,6 @@ public class GeneratePairs {
     generatePairIdList();
   }
 
-  public int getRandomLocationNumber() {
-    return randomLocationNumber;
-  }
-
-  public int getSelectLocationNumber() {
-    return selectLocationNumber;
-  }
-
-  public int getRandomIdNumber() {
-    return randomIdNumber;
-  }
-
-  public int getSelectIdNumber() {
-    return selectIdNumber;
-  }
-
   /**
    * ゲーム起動ごとにランダムでエンティティの出現場所とペアIDを
    * 決定するために必要な数列リスト。
