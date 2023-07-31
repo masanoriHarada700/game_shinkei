@@ -13,16 +13,16 @@ import org.bukkit.entity.Player;
 @Setter
 public class GameEntityInfo {
 
-    public Player player;
-    public Location entityLocation;
-    public Entity entity;
-    public Integer pairId;
+  public Player player;
+  public Location entityLocation;
+  public Entity entity;
+  public Integer pairId;
 
-    public GameEntityInfo(Player player, Location entityLocation, Entity entity, Integer pairID) {
+  public GameEntityInfo(Player player, Location entityLocation, Entity entity, Integer pairID) {
 
-        this.player = player;
-        this.entityLocation = entityLocation;
-        this.entity = entity;
-        this.pairId = pairID;
-    }
+    this.player = player;
+    this.entityLocation = entityLocation;
+    this.entity = entity;
+    this.pairId = pairID;
+  }
 }
