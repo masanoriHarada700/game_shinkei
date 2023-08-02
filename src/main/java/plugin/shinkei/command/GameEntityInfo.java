@@ -6,13 +6,11 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-@Getter
-@Setter
-
 /**
  * ゲームのエンティティ情報を格納するクラスです。
  */
-
+@Getter
+@Setter
 public class GameEntityInfo {
 
   public Player player;

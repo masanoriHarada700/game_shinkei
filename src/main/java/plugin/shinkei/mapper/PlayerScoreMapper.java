@@ -1,10 +1,10 @@
 package plugin.shinkei.mapper;
 
-import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import plugin.shinkei.mapper.data.PlayerScore;
 
+import java.util.List;
 
 public interface PlayerScoreMapper {
 

@@ -1,20 +1,18 @@
 package plugin.shinkei.mapper.data;
 
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
+import java.time.LocalDateTime;
 
 /**
  * プレイヤーのスコア情報を扱うオブジェクト
  * データベースへの登録データも兼ねる。
- *
  */
-
+@Getter
+@Setter
+@NoArgsConstructor
 public class PlayerScore {
 
   private int id;
@@ -23,10 +21,9 @@ public class PlayerScore {
   private int score;
   private LocalDateTime registeredDt;
 
-  public PlayerScore(String playerName, String difficulty, int score){
+  public PlayerScore(String playerName, String difficulty, int score) {
     this.playerName = playerName;
     this.score = score;
     this.difficulty = difficulty;
-
   }
 }

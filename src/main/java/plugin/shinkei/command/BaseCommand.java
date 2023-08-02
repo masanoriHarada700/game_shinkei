@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 /**
  * コマンドを実行して動かすプラグイン処理の基底クラスです。
  */
-
 public abstract class BaseCommand implements CommandExecutor {
 
   private Player player;
@@ -34,7 +33,7 @@ public abstract class BaseCommand implements CommandExecutor {
    * @return 処理の実行有無
    */
   public abstract boolean onExecutePlayerCommand(Player player, Command command, String label,
-      String[] args);
+                                                 String[] args);
 
 
   /**
@@ -47,7 +46,7 @@ public abstract class BaseCommand implements CommandExecutor {
    * @return 処理の実行有無
    */
   public abstract boolean onExecuteNPCCommand(CommandSender sender, Command command, String label,
-      String[] args);
+                                              String[] args);
 
 }
 

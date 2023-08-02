@@ -1,12 +1,13 @@
 package plugin.shinkei.command;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *　出現させるエンティティの出現位置を決定するクラスです。
+ * 出現させるエンティティの出現位置を決定するクラスです。
  */
 public class GameEntityPosition {
 
@@ -16,7 +17,7 @@ public class GameEntityPosition {
   public final List<Location> gameEntityPositionList = new ArrayList<>();
 
 
-  public GameEntityPosition(Player player,Difficulty isDifficulty) {
+  public GameEntityPosition(Player player, Difficulty isDifficulty) {
     this.player = player;
 
     int i;
@@ -34,16 +35,17 @@ public class GameEntityPosition {
       for (Integer variableZ : entityPositionListZ) {
         Integer positionX = variableX * 3 + 3;
         Integer positionZ = variableZ * 3 + 3;
-        gameEntityPositionList.add(newEntityPosition(positionX,positionZ));
+        gameEntityPositionList.add(newEntityPosition(positionX, positionZ));
       }
     }
   }
 
   /**
    * プレイヤーを起点としたエンティティの出現場所を指定。
+   *
    * @param positionX プレイヤー位置からX軸方向の相対距離
-   * @param positionZ　プレイヤー位置からZ軸方向の相対距離
-   * @return  エンティティの出現場所
+   * @param positionZ 　プレイヤー位置からZ軸方向の相対距離
+   * @return エンティティの出現場所
    */
   private Location newEntityPosition(Integer positionX, Integer positionZ) {
     Location playerLocation = player.getLocation();
